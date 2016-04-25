@@ -62,6 +62,17 @@
 (test-4b-converter 'ok)
 (test-5a-rollback 'ok)
 
+(test-section "parameterize-7")
+(load "./parameterize-7")
+
+(include "./test-include")
+(test-1a-basic)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
+(test-4a-converter)
+(test-4b-converter 'ok)
+(test-5a-rollback 'ok)
+
 
 
 

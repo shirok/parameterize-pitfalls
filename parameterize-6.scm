@@ -2,45 +2,36 @@
 
 ;;; 実装例6
 
-;; parameterizeによる束縛は (((<parameter> . <value>) ...) ...) 形式で
-;; ここに保存
-(define *env* '())
-
-(define (%lookup param) ; returns (<parameter> . <current-value>) or #f
-  (let loop ([frames *env*])
-    (cond [(null? frames) #f]
-          [(find (^[pv] (eq? (car pv) param)) (car frames))]
-          [else (loop (cdr frames))])))
-
+;; これは例5と同じ
 (define (make-parameter init :optional (converter identity))
-  (let1 global-value (converter init)
-    (rec (self . arg)
-      (if (null? arg)
-        (if-let1 pv (%lookup self) (cdr pv) global-value)
-        (let1 newval (converter (car arg))
-          (if-let1 pv (%lookup self)
-            (begin0 (cdr pv) (set! (cdr pv) newval))
-            (begin0 global-value (set! global-value newval))))))))
+  (let1 val (converter init)
+    (case-lambda
+      [() val]
+      [(newval)   (begin0 val (set! val (converter newval)))]
+      [(newval _) (begin0 val (set! val newval))])))
 
 (define-syntax parameterize
   (syntax-rules ()
     [(_ ((param val) ...) body ...)
-     (let* ([params (list param ...)]
-            [vals   (list val ...)]
-            [frame  (map list params)]
-            [restart #f])
+     (let* ([params (list param ...)]   ;paramのリスト
+            [vals   (list val ...)]     ;valのリスト
+            [saves  #f]
+            [restarted #f])
        (dynamic-wind
-         (^[] (push! *env* frame))
+         (^[] (if restarted
+                (set! saves (map (^[p v] (p v #t)) params saves))
+                (set! saves (map (^[p] (p)) params)))) ; 初回の値を保存
          (^[]
-           (unless restart
-             (for-each (^[p v] (p v)) params vals))
+           (unless restarted  ; 初回のみここで値をセット。エラーが起きたら巻き戻される
+             (set! saves (map (^[p v] (p v)) params vals)))
            body ...)
          (^[]
-           (set! restart #t)
-           (pop! *env*))))]))
+           (set! restarted #t)
+           (set! saves (map (^[p v] (p v #t)) params saves)))))]))
 #|
 ;;; 実行例
 
+;; 今度はok
 (define special
   (make-parameter 1 -))
 
@@ -61,6 +52,16 @@
 
 (cc #f)
 ;;=> 5
+
+;; まずい例
+(define a (make-parameter 1 (^x (unless (number? x) (error "!!")) x)))
+(define b (make-parameter 2 (^x (unless (number? x) (error "!!")) x)))
+
+(parameterize ((a 10) (b 'abc)) (list a b))
+;;=> error
+
+(a)
+;;=> 10 ; 1に戻ってない
 
 |#
 
