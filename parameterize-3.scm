@@ -4,22 +4,22 @@
 
 ;; これは例1,2と同じ
 (define (make-parameter init)
-  (lambda arg
-    (if (null? arg)
-      init                     ; 引数なしの時は現在値を返す
-      (let ((oldval init))
-        (set! init (car arg))  ; 引数ありの時はそれを新たな現在値にして
-        oldval))))             ; 以前の値を返す
+  (case-lambda
+    [() init]                 ; 引数なしの時は現在値を返す
+    [(newval)
+     (begin0 init             ; 引数ありの時はそれを新たな現在値にして元の値を返す
+       (set! init newval))]))
 
 (define-syntax parameterize
   (syntax-rules ()
-    ((_ ((param val) ...) body ...)
-     (let* ((params (list param ...))   ;paramのリスト
-            (vals   (list val ...)))    ;valのリスト
+    [(_ ((param val) ...) body ...)
+     (let* ([params (list param ...)]   ;paramのリスト
+            [vals   (list val ...)])    ;valのリスト 兼 現在の値のセーブ
        (dynamic-wind
-         (lambda () (set! vals (map (lambda (p v) (p v)) params vals)))
-         (lambda () body ...)
-         (lambda () (set! vals (map (lambda (p v) (p v)) params vals))))))))
+         (^[] (set! vals (map (^[p v] (p v)) params vals)))
+         (^[] body ...)
+         (^[] (set! vals (map (^[p v] (p v)) params vals)))))]))
+
 #|
 ;;; 実行例
 

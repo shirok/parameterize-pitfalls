@@ -4,25 +4,23 @@
 
 ;; converter手続きを追加
 (define (make-parameter init . opts)
-  (let* ((converter (if (null? opts) values (car opts)))
-         (val (converter init)))
-    (lambda arg
-      (if (null? arg)
-        val
-        (let ((oldval val))
-          (set! val (converter (car arg)))
-          oldval)))))
+  (let* ([converter (if (null? opts) values (car opts))]
+         [val (converter init)])
+    (case-lambda
+      [() val]
+      [(newval) (begin0 val
+                  (set! val (converter newval)))])))
 
 ;; これは例3と同じ
 (define-syntax parameterize
   (syntax-rules ()
-    ((_ ((param val) ...) body ...)
-     (let* ((params (list param ...))   ;paramのリスト
-            (vals   (list val ...)))    ;valのリスト
+    [(_ ((param val) ...) body ...)
+     (let* ([params (list param ...)]   ;paramのリスト
+            [vals   (list val ...)])    ;valのリスト
        (dynamic-wind
-         (lambda () (set! vals (map (lambda (p v) (p v)) params vals)))
-         (lambda () body ...)
-         (lambda () (set! vals (map (lambda (p v) (p v)) params vals))))))))
+         (^[] (set! vals (map (^[p v] (p v)) params vals)))
+         (^[] body ...)
+         (^[] (set! vals (map (^[p v] (p v)) params vals)))))]))
 #|
 ;;; 実行例
 

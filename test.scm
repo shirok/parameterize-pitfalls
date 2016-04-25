@@ -35,6 +35,8 @@
 (test-1a-basic)
 (test-1b-restart 3)
 (test-2a-set+restart 5)
+(test-4a-converter)
+(test-4b-converter '(5 -5))
 
 
 (test-section "parameterize-5")
@@ -44,6 +46,8 @@
 (test-1a-basic)
 (test-1b-restart 3)
 (test-2a-set+restart 5)
+(test-4a-converter)
+(test-4b-converter '(5 5))
 
 
 (test-section "parameterize-6")
@@ -53,6 +57,8 @@
 (test-1a-basic)
 (test-1b-restart 3)
 (test-2a-set+restart 5)
+(test-4a-converter)
+(test-4b-converter '(5 5))
 
 
 

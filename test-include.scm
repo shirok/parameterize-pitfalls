@@ -35,3 +35,30 @@
            (if cc
              (let1 c cc (set! cc #f) (c #f))
              a))))
+
+(define (test-4a-converter)
+  (define prompt
+    (make-parameter
+     '>
+     (lambda (x)
+       (if (string? x)
+         x
+         (with-output-to-string (lambda () (write x)))))))
+  (test* "test-4a-converter" ">" (prompt))
+  (test* "test-4a-converter" "$" (parameterize ((prompt '$))
+                                   (prompt))))
+
+(define (test-4b-converter expect)
+  (define special
+    (make-parameter 1 -))
+  (define cc #f)
+  (test* "test-4b-converter" expect
+         (let1 r '()
+           (push! r (parameterize ((special -5))
+                      (call/cc (lambda (c) (set! cc c)))
+                      (special)))
+           (if cc
+             (let1 c cc (set! cc #f) (c #f))
+             (reverse r)))))
+
+  

@@ -5,40 +5,38 @@
 (define *env* '())
 
 (define (%lookup param) ; returns (<parameter> . <current-value>) or #f
-  (let loop ((frames *env*))
-    (cond ((null? frames) #f)
-          ((find (lambda (pv) (eq? (car pv) param)) (car frames)))
-          (else (loop (cdr frames))))))
+  (let loop ([frames *env*])
+    (cond [(null? frames) #f]
+          [(find (^[pv] (eq? (car pv) param)) (car frames))]
+          [else (loop (cdr frames))])))
 
 (define (make-parameter init . opts)
-  (let* ((converter (if (null? opts) values (car opts)))
-         (global-value (converter init)))
+  (let* ([converter (if (null? opts) values (car opts))]
+         [global-value (converter init)])
     (rec (self . arg)
       (if (null? arg)
         (if-let1 pv (%lookup self) (cdr pv) global-value)
         (let1 newval (converter (car arg))
           (if-let1 pv (%lookup self)
-            (rlet1 oldval (cdr pv)
-              (set! (cdr pv) newval))
-            (rlet1 oldval global-value
-              (set! global-value newval))))))))
+            (begin0 (cdr pv) (set! (cdr pv) newval))
+            (begin0 global-value (set! global-value newval))))))))
 
 (define-syntax parameterize
   (syntax-rules ()
-    ((_ ((param val) ...) body ...)
-     (let* ((params (list param ...))
-            (vals   (list val ...))
-            (frame  (map list params))
-            (restart #f))
+    [(_ ((param val) ...) body ...)
+     (let* ([params (list param ...)]
+            [vals   (list val ...)]
+            [frame  (map list params)]
+            [restart #f])
        (dynamic-wind
-         (lambda ()
+         (^[]
            (push! *env* frame)
            (unless restart
-             (for-each (lambda (p v) (p v)) params vals)))
-         (lambda () body ...)
-         (lambda ()
+             (for-each (^[p v] (p v)) params vals)))
+         (^[] body ...)
+         (^[]
            (set! restart #t)
-           (pop! *env*)))))))
+           (pop! *env*))))]))
 #|
 ;;; 実行例
 
@@ -62,7 +60,6 @@
 
 (cc #f)
 ;;=> 5
-
 
 |#
 

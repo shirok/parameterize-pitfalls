@@ -8,31 +8,27 @@
 ;;  (proc newval something) => newvalをconverter手続きを通さずに直接セット
 ;; 3番目は内部的に使う
 (define (make-parameter init . opts)
-  (let* ((converter (if (null? opts) values (car opts)))
-         (val (converter init)))
-    (lambda arg
-      (cond [(null? arg) val]
-            [(null? (cdr arg)) 
-             (let ((oldval val))
-               (set! val (converter (car arg)))
-               oldval)]
-            [else
-             (let ((oldval val))
-               (set! val (car arg))
-               oldval)]))))
+  (let* ([converter (if (null? opts) values (car opts))]
+         [val (converter init)])
+    (case-lambda
+      [() val]
+      [(newval)   (begin0 val
+                    (set! val (converter newval)))]
+      [(newval _) (begin0 val
+                    (set! val newval))])))
 
 (define-syntax parameterize
   (syntax-rules ()
-    ((_ ((param val) ...) body ...)
-     (let* ((params (list param ...))   ;paramのリスト
-            (vals   (list val ...))     ;valのリスト
-            (saves  #f))
+    [(_ ((param val) ...) body ...)
+     (let* ([params (list param ...)]   ;paramのリスト
+            [vals   (list val ...)]     ;valのリスト
+            [saves  #f])
        (dynamic-wind
-         (lambda () (if saves
-                      (set! saves (map (lambda (p v) (p v #t)) params saves))
-                      (set! saves (map (lambda (p v) (p v)) params vals))))
-         (lambda () body ...)
-         (lambda () (set! saves (map (lambda (p v) (p v #t)) params saves))))))))
+         (^[] (if saves
+                      (set! saves (map (^[p v] (p v #t)) params saves))
+                      (set! saves (map (^[p v] (p v)) params vals))))
+         (^[] body ...)
+         (^[] (set! saves (map (^[p v] (p v #t)) params saves)))))]))
 #|
 ;;; 実行例
 
