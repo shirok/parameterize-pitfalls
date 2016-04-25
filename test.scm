@@ -7,7 +7,7 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 1)
+(test-1b-restart 'bad)
 
 
 (test-section "parameterize-2")
@@ -15,8 +15,8 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 3)
-(test-2a-set+restart 3)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'bad)
 
 
 (test-section "parameterize-3")
@@ -24,8 +24,8 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 3)
-(test-2a-set+restart 5)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
 
 
 (test-section "parameterize-4")
@@ -33,10 +33,10 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 3)
-(test-2a-set+restart 5)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
 (test-4a-converter)
-(test-4b-converter '(5 -5))
+(test-4b-converter 'bad)
 
 
 (test-section "parameterize-5")
@@ -44,11 +44,11 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 3)
-(test-2a-set+restart 5)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
 (test-4a-converter)
-(test-4b-converter '(5 5))
-(test-5a-rollback 10)
+(test-4b-converter 'ok)
+(test-5a-rollback 'bad)
 
 
 (test-section "parameterize-6")
@@ -56,11 +56,11 @@
 
 (include "./test-include")
 (test-1a-basic)
-(test-1b-restart 3)
-(test-2a-set+restart 5)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
 (test-4a-converter)
-(test-4b-converter '(5 5))
-(test-5a-rollback 1)
+(test-4b-converter 'ok)
+(test-5a-rollback 'ok)
 
 
 

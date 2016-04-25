@@ -11,11 +11,11 @@
                    (get-special))
            (list x (get-special)))))
 
-(define (test-1b-restart expect)
+(define (test-1b-restart ok)
   (define special (make-parameter 1))
   (define (get-special) (special))
   (define cc #f)
-  (test* "test-1b-restart" expect
+  (test* #"test-1b-restart (~ok)" (if (eq? ok 'ok) 3 1)
          (let1 a (parameterize ((special 3))
                    (call/cc (lambda (c) (set! cc c)))
                    (get-special))
@@ -23,11 +23,11 @@
              (let1 c cc (set! cc #f) (c #f))
              a))))
 
-(define (test-2a-set+restart expect)
+(define (test-2a-set+restart ok)
   (define special (make-parameter 1))
   (define (get-special) (special))
   (define cc #f)
-  (test* "test-2a-set+restart" expect
+  (test* #"test-2a-set+restart (~ok)" (if (eq? ok 'ok) 5 3)
          (let1 a (parameterize ((special 3))
                    (special 5)
                    (call/cc (lambda (c) (set! cc c)))
@@ -48,11 +48,11 @@
   (test* "test-4a-converter" "$" (parameterize ((prompt '$))
                                    (prompt))))
 
-(define (test-4b-converter expect)
+(define (test-4b-converter ok)
   (define special
     (make-parameter 1 -))
   (define cc #f)
-  (test* "test-4b-converter" expect
+  (test* #"test-4b-converter (~ok)" (if (eq? ok 'ok) '(5 5) '(5 -5))
          (let1 r '()
            (push! r (parameterize ((special -5))
                       (call/cc (lambda (c) (set! cc c)))
@@ -61,11 +61,11 @@
              (let1 c cc (set! cc #f) (c #f))
              (reverse r)))))
 
-(define (test-5a-rollback expect)
+(define (test-5a-rollback ok)
   (define a (make-parameter 1 (^x (unless (number? x) (error "!!")) x)))
   (define b (make-parameter 2 (^x (unless (number? x) (error "!!")) x)))
 
   (guard (e [else #f]) ; ignore error
     (parameterize ((a 10) (b 'abc)) (list a b)))
 
-  (test* "test-5a-rollback" expect (a)))
+  (test* #"test-5a-rollback (~ok)" (if (eq? ok 'ok) 1 10) (a)))
