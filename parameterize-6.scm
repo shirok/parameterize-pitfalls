@@ -30,11 +30,11 @@
             [frame  (map list params)]
             [restart #f])
        (dynamic-wind
+         (^[] (push! *env* frame))
          (^[]
-           (push! *env* frame)
            (unless restart
-             (for-each (^[p v] (p v)) params vals)))
-         (^[] body ...)
+             (for-each (^[p v] (p v)) params vals))
+           body ...)
          (^[]
            (set! restart #t)
            (pop! *env*))))]))

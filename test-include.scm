@@ -61,4 +61,11 @@
              (let1 c cc (set! cc #f) (c #f))
              (reverse r)))))
 
-  
+(define (test-5a-rollback expect)
+  (define a (make-parameter 1 (^x (unless (number? x) (error "!!")) x)))
+  (define b (make-parameter 2 (^x (unless (number? x) (error "!!")) x)))
+
+  (guard (e [else #f]) ; ignore error
+    (parameterize ((a 10) (b 'abc)) (list a b)))
+
+  (test* "test-5a-rollback" expect (a)))

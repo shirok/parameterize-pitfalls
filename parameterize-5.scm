@@ -51,6 +51,15 @@
 (cc #f)
 ;;=> 5
 
+;; まずい例
+(define a (make-parameter 1 (^x (unless (number? x) (error "!!")) x)))
+(define b (make-parameter 2 (^x (unless (number? x) (error "!!")) x)))
+
+(parameterize ((a 10) (b 'abc)) (list a b))
+;;=> error
+
+(a)
+;;=> 10 ; 1に戻ってない
 
 |#
 

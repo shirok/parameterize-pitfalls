@@ -48,6 +48,7 @@
 (test-2a-set+restart 5)
 (test-4a-converter)
 (test-4b-converter '(5 5))
+(test-5a-rollback 10)
 
 
 (test-section "parameterize-6")
@@ -59,6 +60,7 @@
 (test-2a-set+restart 5)
 (test-4a-converter)
 (test-4b-converter '(5 5))
+(test-5a-rollback 1)
 
 
 
