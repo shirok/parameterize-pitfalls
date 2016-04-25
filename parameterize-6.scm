@@ -2,6 +2,8 @@
 
 ;;; 実装例6
 
+;; parameterizeによる束縛は (((<parameter> . <value>) ...) ...) 形式で
+;; ここに保存
 (define *env* '())
 
 (define (%lookup param) ; returns (<parameter> . <current-value>) or #f
@@ -10,9 +12,8 @@
           [(find (^[pv] (eq? (car pv) param)) (car frames))]
           [else (loop (cdr frames))])))
 
-(define (make-parameter init . opts)
-  (let* ([converter (if (null? opts) values (car opts))]
-         [global-value (converter init)])
+(define (make-parameter init :optional (converter identity))
+  (let1 global-value (converter init)
     (rec (self . arg)
       (if (null? arg)
         (if-let1 pv (%lookup self) (cdr pv) global-value)

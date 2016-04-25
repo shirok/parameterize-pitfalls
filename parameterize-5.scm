@@ -7,15 +7,12 @@
 ;;  (proc newval)           => newvalを新しい値とし、以前の値を返す
 ;;  (proc newval something) => newvalをconverter手続きを通さずに直接セット
 ;; 3番目は内部的に使う
-(define (make-parameter init . opts)
-  (let* ([converter (if (null? opts) values (car opts))]
-         [val (converter init)])
+(define (make-parameter init :optional (converter identity))
+  (let1 val (converter init)
     (case-lambda
       [() val]
-      [(newval)   (begin0 val
-                    (set! val (converter newval)))]
-      [(newval _) (begin0 val
-                    (set! val newval))])))
+      [(newval)   (begin0 val (set! val (converter newval)))]
+      [(newval _) (begin0 val (set! val newval))])))
 
 (define-syntax parameterize
   (syntax-rules ()
@@ -25,8 +22,8 @@
             [saves  #f])
        (dynamic-wind
          (^[] (if saves
-                      (set! saves (map (^[p v] (p v #t)) params saves))
-                      (set! saves (map (^[p v] (p v)) params vals))))
+                (set! saves (map (^[p v] (p v #t)) params saves))
+                (set! saves (map (^[p v] (p v)) params vals))))
          (^[] body ...)
          (^[] (set! saves (map (^[p v] (p v #t)) params saves)))))]))
 #|

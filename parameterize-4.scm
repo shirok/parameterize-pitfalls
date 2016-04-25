@@ -3,13 +3,11 @@
 ;;; 実装例4
 
 ;; converter手続きを追加
-(define (make-parameter init . opts)
-  (let* ([converter (if (null? opts) values (car opts))]
-         [val (converter init)])
+(define (make-parameter init :optional (converter identity))
+  (let1 val (converter init)
     (case-lambda
       [() val]
-      [(newval) (begin0 val
-                  (set! val (converter newval)))])))
+      [(newval) (begin0 val (set! val (converter newval)))])))
 
 ;; これは例3と同じ
 (define-syntax parameterize
