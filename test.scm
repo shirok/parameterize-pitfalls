@@ -28,6 +28,25 @@
 (test-2a-set+restart 'ok)
 
 
+(test-section "parameterize-4")
+(load "./parameterize-4")
+
+(include "./test-include")
+(test-1a-basic)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
+(test-4a-replace-parameter-variable 'bad)
+
+(test-section "parameterize-5")
+(load "./parameterize-5")
+
+(include "./test-include")
+(test-1a-basic)
+(test-1b-restart 'ok)
+(test-2a-set+restart 'ok)
+(test-4a-replace-parameter-variable 'ok)
+
+
 (test-section "parameterize-6")
 (load "./parameterize-6")
 

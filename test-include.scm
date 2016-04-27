@@ -36,6 +36,13 @@
              (let1 c cc (set! cc #f) (c #f))
              a))))
 
+(define (test-4a-replace-parameter-variable ok)
+  (define special (make-parameter 1))
+  (test* "test-4a-replace-parameter-variable" (if (eq? ok 'ok) 1.0 (test-error))
+         (parameterize ((special 3))
+           (set! special string->number)
+           (special "1.0"))))
+
 (define (test-6a-converter)
   (define prompt
     (make-parameter
