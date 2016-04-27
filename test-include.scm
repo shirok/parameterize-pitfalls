@@ -36,6 +36,20 @@
              (let1 c cc (set! cc #f) (c #f))
              a))))
 
+(define (test-2b-set+restart ok)
+  (define special (make-parameter 1))
+  (define (get-special) (special))
+  (define cc #f)
+  (test* #"test-2b-set+restart (~ok)" (if (eq? ok 'ok) '(3 5) '(3 3))
+         (let1 r '()
+           (parameterize ((special 3))
+             (call/cc (lambda (c) (set! cc c)))
+             (push! r (special))
+             (special 5))
+           (if cc
+             (let1 c cc (set! cc #f) (c #f))
+             (reverse r)))))
+
 (define (test-4a-replace-parameter-variable ok)
   (define special (make-parameter 1))
   (test* "test-4a-replace-parameter-variable" (if (eq? ok 'ok) 1.0 (test-error))

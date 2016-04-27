@@ -17,6 +17,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'bad)
+(test-2b-set+restart 'bad)
 
 
 (test-section "parameterize-3")
@@ -26,6 +27,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 
 
 (test-section "parameterize-4")
@@ -35,6 +37,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'bad)
 
 (test-section "parameterize-5")
@@ -44,6 +47,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'ok)
 
 
@@ -54,6 +58,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'ok)
 (test-6a-converter)
 (test-6b-converter 'bad)
@@ -66,6 +71,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'ok)
 (test-6a-converter)
 (test-6b-converter 'ok)
@@ -79,6 +85,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'ok)
 (test-6a-converter)
 (test-6b-converter 'ok)
@@ -91,6 +98,7 @@
 (test-1a-basic)
 (test-1b-restart 'ok)
 (test-2a-set+restart 'ok)
+(test-2b-set+restart 'ok)
 (test-4a-replace-parameter-variable 'ok)
 (test-6a-converter)
 (test-6b-converter 'ok)
