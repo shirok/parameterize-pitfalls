@@ -1,12 +1,8 @@
 ;; -*- coding:utf-8 -*-
 
-;;; 実装例5
+;;; 実装例8
 
-;; parameter手続きのインタフェースを変更
-;;  (proc)                  => 現在の値を返す
-;;  (proc newval)           => newvalを新しい値とし、以前の値を返す
-;;  (proc newval something) => newvalをconverter手続きを通さずに直接セット
-;; 3番目は内部的に使う
+;; これは例7と同じ
 (define (make-parameter init :optional (converter identity))
   (let1 val (converter init)
     (case-lambda
@@ -19,13 +15,19 @@
     [(_ ((param val) ...) body ...)
      (let* ([params (list param ...)]   ;paramのリスト
             [vals   (list val ...)]     ;valのリスト
-            [saves  #f])
+            [saves  #f]
+            [restarted #f])
        (dynamic-wind
-         (^[] (if saves
+         (^[] (if restarted
                 (set! saves (map (^[p v] (p v #t)) params saves))
-                (set! saves (map (^[p v] (p v)) params vals))))
-         (^[] body ...)
-         (^[] (set! saves (map (^[p v] (p v #t)) params saves)))))]))
+                (set! saves (map (^[p] (p)) params)))) ; 初回の値を保存
+         (^[]
+           (unless restarted  ; 初回のみここで値をセット。エラーが起きたら巻き戻される
+             (set! saves (map (^[p v] (p v)) params vals)))
+           body ...)
+         (^[]
+           (set! restarted #t)
+           (set! saves (map (^[p v] (p v #t)) params saves)))))]))
 #|
 ;;; 実行例
 
