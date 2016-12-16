@@ -31,29 +31,6 @@
 #|
 ;;; 実行例
 
-;; 今度はok
-(define special
-  (make-parameter 1 -))
-
-(special)
-;;=> -1
-
-(parameterize ((special -5))
-  (special))
-;;=> 5
-
-
-(define cc #f)
-
-(parameterize ((special -5))
-  (call/cc (lambda (c) (set! cc c)))
-  (special))
-;;=> 5
-
-(cc #f)
-;;=> 5
-
-;; まずい例
 (define a (make-parameter 1 (^x (unless (number? x) (error "!!")) x)))
 (define b (make-parameter 2 (^x (unless (number? x) (error "!!")) x)))
 
@@ -61,8 +38,7 @@
 ;;=> error
 
 (a)
-;;=> 10 ; 1に戻ってない
-
+;;=> 1  ; ちゃんと戻る
 |#
 
 
